@@ -33,8 +33,8 @@ function UserProfile() {
   }
 
   return (
-    <section className={classes.profile}>
-      <h1>Your User Profile</h1>
+    <section className=''>
+      <h1 className=''>Your User Profile</h1>
       <ProfileForm onChangePassword={changePasswordHandler} />
     </section>
   );

@@ -26,19 +26,25 @@ function ProfileForm(props) {
   }
 
   return (
-    <form className={classes.form} onSubmit={submitHandler}>
-      <div className={classes.control}>
-        <label htmlFor='new-password'>New Password</label>
-        <input type='password' id='new-password' ref={newPasswordRef} />
+    <div className='flex justify-center'>
+      
+    <form className='border-1 w-80 p-5 rounded-md   bg-purple-400' onSubmit={submitHandler}>
+      <div className='text-black flex flex-col font-bold'>
+        <label htmlFor='new-password'>Nouveau mot de passe </label>
+        <input type='password' className='  border-2  rounded-md hover:border-green-800  p-1 border-black' id='new-password' ref={newPasswordRef} />
       </div>
-      <div className={classes.control}>
-        <label htmlFor='old-password'>Old Password</label>
-        <input type='password' id='old-password' ref={oldPasswordRef} />
+      <div className='text-black flex flex-col font-bold'>
+        <label htmlFor='old-password'>Ancien mot de passe</label>
+        <input type='password'className='border-2 rounded-md p-1 hover:border-green-800 border-black' id='old-password' ref={oldPasswordRef} />
       </div>
-      <div className={classes.action}>
-        <button type="submit"  >Change Password</button>
+      <div className='flex justify-center'>
+      <div className=' w-40 mt-5 '>
+        <button type="submit" className='bg-[#ffced4] hover:scale-105 hover:ease-in-out text-black py-2 px-2  rounded-md' >Changer de mot de passe</button>
+      </div>
+
       </div>
     </form>
+    </div>
   );
 }
 
