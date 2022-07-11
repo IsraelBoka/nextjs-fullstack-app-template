@@ -5,25 +5,15 @@ import * as Yup from "yup";
 import classes from "./auth-form.module.css";
 
 
-const getErrorMessages = ({ path, message, inner }:any) => {
-  if (inner && inner.length) {
-    return inner.reduce((acc:any, { path, message }:any) => {
-      acc[path] = message;
-      return acc;
-    }, {});
-  }
-  return { [path]: message };
-};
-
 const validationschema = Yup.object().shape({
-  enteredEmail: Yup.string().
-  email().
-  required("field required")
-  .typeError('Email mal renseigné'),
+  enteredEmail: Yup.string()
+    .email("Email incorrect !")
+    .required("field required")
+    .typeError("Email mal renseigné"),
   enteredPassword: Yup.string()
-  .min(6,"Mot de passe doit être > à 6 caractères")
-  .required("field required")
-  .typeError("Mot de passe doit être > à 6 caractères"),
+    .min(6, "Mot de passe doit être > à 6 caractères")
+    .required("field required")
+    .typeError("Mot de passe doit être > à 6 caractères"),
 });
 
 async function createUser(email: string, password: string) {
@@ -48,13 +38,12 @@ async function createUser(email: string, password: string) {
     password: password,
   });
 
-
   // console.log("signup",data)
   return data;
 }
 
 function AuthForm() {
-  const [errors, setErrors] = useState('')
+  const [errors, setErrors] = useState("");
 
   const emailInputRef = useRef<any>(null);
   const passwordInputRef = useRef<any>(null);
@@ -64,6 +53,23 @@ function AuthForm() {
 
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
+  }
+
+  async function submitSignup(){}
+  async function submitSignin(email:string,password:string){
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email: email,
+      password: password,
+    });
+    if (result) {
+      if (!result.error) {
+        // set some auth state
+        router.replace("/profile");
+      }
+    }
+    
   }
 
   async function submitHandler(event: any) {
@@ -76,46 +82,30 @@ function AuthForm() {
         enteredEmail,
         enteredPassword,
       };
-      const testvalidation = await validationschema.isValid({
-        email: "test",
-        password: "password",
-      });
-      console.log(testvalidation);
-
-      console.log(formdata);
 
       const isValid = await validationschema.isValid(formdata);
-try {
-  validationschema.validateSync(formdata);
-} catch (err:any) {
-  console.log('erreur',err);
-  setErrors(err.message)
-}
+      try {
+        validationschema.validateSync(formdata);
+      } catch (err: any) {
+        console.log("erreur", err);
+        setErrors(err.message);
+      }
       if (isValid) {
-        
         if (isLogin) {
-          const result = await signIn("credentials", {
-            redirect: false,
-            email: enteredEmail,
-            password: enteredPassword,
-          });
-          if (result) {
-            if (!result.error) {
-              // set some auth state
-              router.replace("/profile");
-            }
-          } else {
-            try {
-              const result = await createUser(enteredEmail, enteredPassword);
-              console.log(result);
-            } catch (error) {
-              console.log(error);
-            }
+          submitSignin(enteredEmail,enteredPassword)
+        }
+        else{
+          try {
+            const result = await createUser(enteredEmail, enteredPassword);
+            console.log(result);
+          } catch (error:any) {
+            console.log(error.message);
+            setErrors(error.message)
           }
+
         }
       }
     }
-    // optional: Add validation
   }
 
   return (
@@ -135,9 +125,7 @@ try {
             ref={passwordInputRef}
           />
         </div>
-        <div className="text-red-500 flex justify-end">
-          {errors}
-        </div>
+        <div className="text-red-500 flex justify-end">{errors}</div>
         <div className={classes.actions}>
           <button>{isLogin ? "Login" : "Create Account"}</button>
           <button

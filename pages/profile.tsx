@@ -5,16 +5,13 @@ import { useEffect, useState } from "react";
 
 
 
-/**
- * todo: Ajouter les données utilisateurs puis faire un commit.
- */
+
 import { GetServerSideProps } from "next";
 import { PrismaClient, User } from "@prisma/client";
 import Loading from "../components/Loading";
 const prisma = new PrismaClient();
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const sessionuser = await getSession(ctx);
-  const emailuser = sessionuser?.user?.email;
   const testuser5 = String(sessionuser?.user?.email)
   const data =  await prisma.user.findUnique({
     select:{

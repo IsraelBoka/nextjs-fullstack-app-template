@@ -5,14 +5,8 @@ async function handler(req, res) {
   if (req.method !== 'POST') {
     return;
   }
-
-  console.log("req.body: ", req.body);
-
   const data = req.body;
-
   const { email, password } = data;
-
-  console.log(email, password)
   if (
     !email ||
     !email.includes('@') ||
@@ -34,7 +28,7 @@ async function handler(req, res) {
   });
   // return error if user already exists
   if (existingUser) {
-    res.status(422).json({ message: 'User exists already!' });
+    res.status(422).json({ message: 'email déjà utilisé' });
     return;
   }
 
