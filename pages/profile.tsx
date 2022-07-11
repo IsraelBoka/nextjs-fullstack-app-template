@@ -10,11 +10,10 @@ import { useEffect, useState } from "react";
  */
 import { GetServerSideProps } from "next";
 import { PrismaClient, User } from "@prisma/client";
-import Loading from "../components/loading";
+import Loading from "../components/Loading";
 const prisma = new PrismaClient();
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const sessionuser = await getSession(ctx);
-  console.log(sessionuser?.user?.email);
   const emailuser = sessionuser?.user?.email;
   const testuser5 = String(sessionuser?.user?.email)
   const data =  await prisma.user.findUnique({
@@ -37,7 +36,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 function Profile(data : any) {
-    console.log(data.data?.email)
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 

@@ -26,8 +26,6 @@ export default async function auth(req, res) {
               email: credentials.email,
             },
           });
-          console.log(credentials.password)
-          console.log(user.password)
 
           const isValid = await verifyPassword(
             credentials.password,
