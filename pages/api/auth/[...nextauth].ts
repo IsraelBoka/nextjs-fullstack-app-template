@@ -2,9 +2,11 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { verifyPassword } from "../../../lib/auth";
-import prisma from "../../../lib/prisma";
+import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function auth(req, res) {
+const prisma = new PrismaClient();
+export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   return await NextAuth(req, res, {
     // adapter: PrismaAdapter(prisma),
     providers: [
@@ -18,15 +20,18 @@ export default async function auth(req, res) {
         credentials: {
           email: { label: "email", type: "email", placeholder: "jsmith" },
           password: { label: "Password", type: "password" },
-        },
-        async authorize(credentials, req) {
+        },          
+
+        async authorize(credentials:any|undefined, req) {
           // prisma get user by mail
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email,
             },
           });
-
+          if (!user) {
+            throw new Error("Email ou mot de passe incorrect");
+          }
           const isValid = await verifyPassword(
             credentials.password,
             user.password
@@ -34,44 +39,17 @@ export default async function auth(req, res) {
           if (!isValid) {
             console.log("Could not log you in!");
           }
-
           if (user && isValid) {
             // Any object returned will be saved in `user` property of the JWT
             return { email: user.email, name: user.name };
           } else {
-            // If you return null or false then the credentials will be rejected
-             throw new Error('error message');
-            // You can also Reject this callback with an Error or with a URL:
-            // throw new Error('error message') // Redirect to error page
-            // throw '/path/to/redirect'        // Redirect to a URL
+            throw new Error("Email ou mot de passe incorrect");
           }
-          /*           if (!user) {
-            throw new Error("No user found!");
-          }
-
-          // compare given password with hashed password from database
-          const isValid = await verifyPassword(
-            credentials.password,
-            user.password
-          );
-
-          if (!isValid) {
-            throw new Error("Could not log you in!");
-          }
-          console.log("user id", user.id);
-          if (user) {
-            // Any object returned will be saved in `user` property of the JWT
-            return { email: user.email, name: user.name };
-          } else {
-            // If you return null then an error will be displayed advising the user to check their details.
-            return null;
-          } */
         },
       }),
     ],
     secret: process.env.SECRET,
     session: {
-      jwt: true,
       // Choose how you want to save the user session.
       // The default is `"jwt"`, an encrypted JWT (JWE) stored in the session cookie.
       // If you use an `adapter` however, we default it to `"database"` instead.
@@ -86,9 +64,6 @@ export default async function auth(req, res) {
       // Use it to limit write operations. Set to 0 to always update the database.
       // Note: This option is ignored if using JSON Web Tokens
       updateAge: 24 * 60 * 60, // 24 hours
-    },
-    authoptions: {
-      useSecureCookies: false,
     },
     debug: true,
   });

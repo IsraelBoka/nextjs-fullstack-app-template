@@ -15,7 +15,7 @@ function MainNavigation() {
         <div  className="flex-1">
         <Link href="/">
           <a>
-            <div className>Proximi</div>
+            <div>Proximi</div>
           </a>
         </Link>
 
@@ -23,14 +23,16 @@ function MainNavigation() {
         <ul className="flex items-center">
           {!session && !loading && (
             <li className="text-black rounded-md py-2 px-2 bg-purple-200 cursor-pointer hover:bg-purple-400">
-              <Link href="/auth">
-                Login
-              </Link>
+        <Link href="/auth">
+          <a>Login</a>
+        </Link>
             </li>
           )}
           {session && (
             <li className="cursor-pointer hover:underline text-purple-200 flex mr-5">
-              <Link href="/profile">Profile</Link>
+              <Link href="/profile">
+                <a>profile</a>
+              </Link>
             </li>
           )}
           {session && (

@@ -33,7 +33,7 @@ async function createUser(email: string, password: string) {
 
   // login after signup
   const result = await signIn("credentials", {
-    redirect: false,
+    redirect: true,
     email: email,
     password: password,
   });
@@ -44,7 +44,7 @@ async function createUser(email: string, password: string) {
 
 function AuthForm() {
   const [errors, setErrors] = useState("");
-
+  const [success, setSucces] = useState('');
   const emailInputRef = useRef<any>(null);
   const passwordInputRef = useRef<any>(null);
 
@@ -55,7 +55,15 @@ function AuthForm() {
     setIsLogin((prevState) => !prevState);
   }
 
-  async function submitSignup(){}
+  async function submitSignup(email:string,password:string){
+    try {
+      const result = await createUser(email, password);
+      console.log(result);
+    } catch (error:any) {
+      console.log(error.message);
+      setErrors(error.message)
+    }
+  }
   async function submitSignin(email:string,password:string){
 
     const result = await signIn("credentials", {
@@ -67,6 +75,10 @@ function AuthForm() {
       if (!result.error) {
         // set some auth state
         router.replace("/profile");
+      }
+      else{
+        console.log(result.error)
+        setErrors(result.error)
       }
     }
     
@@ -87,7 +99,6 @@ function AuthForm() {
       try {
         validationschema.validateSync(formdata);
       } catch (err: any) {
-        console.log("erreur", err);
         setErrors(err.message);
       }
       if (isValid) {
@@ -95,14 +106,7 @@ function AuthForm() {
           submitSignin(enteredEmail,enteredPassword)
         }
         else{
-          try {
-            const result = await createUser(enteredEmail, enteredPassword);
-            console.log(result);
-          } catch (error:any) {
-            console.log(error.message);
-            setErrors(error.message)
-          }
-
+          submitSignup(enteredEmail,enteredPassword)
         }
       }
     }
@@ -112,6 +116,7 @@ function AuthForm() {
     <section className={classes.auth}>
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
       <form onSubmit={submitHandler}>
+        <div className="flex justify-center text-green-600 ">{success}</div>
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
           <input type="email" id="email" required ref={emailInputRef} />
