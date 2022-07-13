@@ -1,7 +1,9 @@
+import { PrismaClient } from '@prisma/client';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { hashPassword } from '../../../lib/auth';
-import prisma from '../../../lib/prisma';
+const prisma = new PrismaClient
 
-async function handler(req, res) {
+async function handler(req:NextApiRequest, res:NextApiResponse) {
   if (req.method !== 'POST') {
     return;
   }

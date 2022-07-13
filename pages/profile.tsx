@@ -2,14 +2,15 @@ import React from "react";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-
-
-
 import { GetServerSideProps } from "next";
 import { PrismaClient, User } from "@prisma/client";
+import ProfileForm from "../components/profile/user-profile"
 import Loading from "../components/Loading";
+import Link from "next/link";
 const prisma = new PrismaClient();
+
+
+
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const sessionuser = await getSession(ctx);
   const testuser5 = String(sessionuser?.user?.email)
@@ -19,13 +20,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         email:true,
         firstName: true,
         lastName: true,
-    
     },
     where: {
       email: testuser5,
     },
   });
-  console.log(data)
   return {
     props: {
       data,
@@ -56,6 +55,10 @@ function Profile(data : any) {
         <pre>
             Bienvenue : {data.data?.email}
         </pre>
+        <Link href={'./profilepassword'}>
+        <a>Changement de mdp</a>
+        </Link>
+      
     </div>
   );
 }
