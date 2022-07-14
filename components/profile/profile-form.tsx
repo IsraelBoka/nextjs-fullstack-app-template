@@ -1,10 +1,24 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import * as Yup from "yup";
 
+const validationschema = Yup.object().shape({
+  enteredOldPassword: Yup.string()
+  .min(7, "Mot de passe doit être > à 7 caractères")
+  .required("field required")
+  .typeError("Mot de passe doit être > à 6 caractères"),
+
+  enteredNewPassword:
+  Yup.string()
+  .min(7, "Mot de passe doit être > à 7 caractères")
+  .required('test')
+}
+)
 function ProfileForm(props:any) {
   const oldPasswordRef =useRef<any>(null);
   const newPasswordRef = useRef<any>(null);
+  const [errors, setErrors] = useState('')
 
-  function submitHandler(event:any) {
+  async function  submitHandler(event:any) {
     event.preventDefault();
 
     const enteredOldPassword = oldPasswordRef.current.value;
@@ -15,12 +29,26 @@ function ProfileForm(props:any) {
       newPassword: enteredNewPassword,
     });
 
-    // optional: Add validation
+    let passwords = {
+      enteredOldPassword,
+      enteredNewPassword,
+    };
 
+    try {
+      validationschema.validateSync(passwords);
+    } catch (err: any) {
+      console.log(err)
+      setErrors(err.message);
+    }
+
+    const isValid = await validationschema.isValid(passwords);
+
+    if(isValid){
     props.onChangePassword({
       oldPassword: enteredOldPassword,
       newPassword: enteredNewPassword,
     });
+  }
   }
 
   return (
@@ -49,6 +77,7 @@ function ProfileForm(props:any) {
             ref={oldPasswordRef}
           />
         </div>
+        <div>{errors}</div>
         <div className="flex justify-center">
           <div className=" w-40 mt-5 ">
             <button

@@ -10,7 +10,7 @@ const validationschema = Yup.object().shape({
     .required("field required")
     .typeError("Email mal renseigné"),
   enteredPassword: Yup.string()
-    .min(6, "Mot de passe doit être > à 6 caractères")
+    .min(7, "Mot de passe doit être > à 7 caractères")
     .required("field required")
     .typeError("Mot de passe doit être > à 6 caractères"),
 });
@@ -133,7 +133,7 @@ function AuthForm() {
         </div>
         <div className="text-black flex justify-end">{errors}</div>
         <div className='flex flex-col justify-center'>
-          <button className="flex justify-center bg-black hover:scale-105 mb-5">{isLogin ? "Connexion" : "Créer un compte"}</button>
+          <button className="flex mt-5 justify-center bg-black hover:scale-105 mb-5">{isLogin ? "Connexion" : "Créer un compte"}</button>
           <button
             type="button"
             className='bg-[#ffced4] hover:scale-105 hover:ease-in-out text-black py-2 px-2  rounded-md'

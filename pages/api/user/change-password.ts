@@ -50,6 +50,7 @@ export default async function prismaAuthHandler(
       res.status(403).json({ message: "Invalid password." });
       return;
     }
+    if (passwordsAreEqual){
 
     // hash new password
     const hashedPassword = await hashPassword(newPassword);
@@ -63,7 +64,13 @@ export default async function prismaAuthHandler(
         password: hashedPassword,
       },
     });
-
     res.status(200).json({ message: "Password updated!" });
+  }
+  else{
+    res.status(403).json({ message: "Invalid password." });
+    return;
+
+  }
+
   }
 }
